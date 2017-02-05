@@ -6,6 +6,8 @@ import (
 	"reflect"
 	"strings"
 
+	"sort"
+
 	"github.com/golang/protobuf/proto"
 )
 
@@ -97,7 +99,16 @@ func (g *Generator) convert(v reflect.Type) {
 	if len(sp.OneofTypes) > 0 {
 		g.p(2, "")
 		g.p(2, "// oneof types:")
-		for _, prop := range sp.OneofTypes {
+
+		// keys are sorted to ensure deterministic output
+		keys := []string{}
+		for key := range sp.OneofTypes {
+			keys = append(keys, key)
+		}
+		sort.Strings(keys)
+
+		for _, key := range keys {
+			prop := sp.OneofTypes[key]
 			// merge oneof fields into parent
 			f2 := g.subconvertFields(prop.Type.Elem())
 			fields = append(fields, f2...)
