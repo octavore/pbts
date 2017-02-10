@@ -44,7 +44,13 @@ func (g *Generator) Write() {
 	for _, i := range g.models {
 		g.convert(i)
 	}
-	for t, e := range g.enums {
+	sortedEnums := []string{}
+	for t, _ := range g.enums {
+		sortedEnums = append(sortedEnums, t)
+	}
+	sort.Strings(sortedEnums)
+	for _, t := range sortedEnums {
+		e := g.enums[t]
 		g.convertEnum(t, e)
 	}
 }
@@ -61,6 +67,7 @@ func (g *Generator) convertEnum(typeName, enumName string) {
 		enums = append(enums, fmt.Sprintf("'%s'", enum))
 	}
 	if len(enums) > 0 {
+		sort.Strings(enums)
 		g.p(0, fmt.Sprintf("export type %s = %s;", typeName, strings.Join(enums, " | ")))
 	}
 }
