@@ -74,8 +74,11 @@ func (g *Generator) convertEnum(typeName, enumName string) {
 
 const typeFmt = "%s?: %s;"
 
-func (g *Generator) subconvertFields(v reflect.Type) []string {
-	fields := []string{}
+// subconvertFields take a go Type and converts all the fields
+// for that Type as Typescript fields. i.e. `myField?: aTypeScriptType`.
+// Returns the list of field names.
+func (g *Generator) subconvertFields(v reflect.Type) []annotatedField {
+	fields := []annotatedField{}
 	for j := 0; j < v.NumField(); j++ {
 		f := v.Field(j)
 
@@ -86,9 +89,13 @@ func (g *Generator) subconvertFields(v reflect.Type) []string {
 		}
 
 		// type
-		typ := g.goTypeToTSType(f.Type, &f.Tag)
+		typ, builtin := g.goTypeToTSType(f.Type, &f.Tag)
 		if typ != "" {
-			fields = append(fields, name)
+			field := annotatedField{name: name}
+			if !builtin {
+				field.tsType = typ
+			}
+			fields = append(fields, field)
 			g.p(2, fmt.Sprintf(typeFmt, name, typ))
 		} else {
 			g.p(2, "// skipped field: "+name)
@@ -169,9 +176,9 @@ type protoEnum interface {
 
 var protoEnumType = reflect.TypeOf((*protoEnum)(nil)).Elem()
 
-// convert a go type to a TS type.
+// convert a go type to a TS type, and whether it was a TS builtin type or not.
 // note: protobuf "oneof" is not supported
-func (g *Generator) goTypeToTSType(t reflect.Type, tag *reflect.StructTag) string {
+func (g *Generator) goTypeToTSType(t reflect.Type, tag *reflect.StructTag) (string, bool) {
 	if tag != nil {
 		// keep track of enums for later generation
 		// AssignableTo is not strictly speaking necessary, rather it is a
@@ -185,7 +192,7 @@ func (g *Generator) goTypeToTSType(t reflect.Type, tag *reflect.StructTag) strin
 
 		// do not generate oneof types
 		if _, ok := tag.Lookup("protobuf_oneof"); ok {
-			return ""
+			return "", false
 		}
 	}
 
@@ -193,31 +200,45 @@ func (g *Generator) goTypeToTSType(t reflect.Type, tag *reflect.StructTag) strin
 	case reflect.Ptr:
 		return g.goTypeToTSType(t.Elem(), tag)
 	case reflect.Slice:
-		typ := g.goTypeToTSType(t.Elem(), tag)
+		typ, _ := g.goTypeToTSType(t.Elem(), tag)
 		typ += "[]"
-		return typ
+		return typ, true
 	case reflect.Struct:
-		return t.Name()
+		return t.Name(), false
 	case reflect.Interface:
-		return "any"
+		return "any", true
 	case reflect.Map:
-		return fmt.Sprintf("{ [key: %s]: %s; }",
-			g.goTypeToTSType(t.Key(), tag),
-			g.goTypeToTSType(t.Elem(), tag))
+		k, _ := g.goTypeToTSType(t.Key(), tag)
+		e, _ := g.goTypeToTSType(t.Elem(), tag)
+		return fmt.Sprintf("{ [key: %s]: %s; }", k, e), true
 	default:
 		typ := t.Name()
 		if alt, ok := typeMap[typ]; ok {
-			return alt
+			return alt, true
 		}
-		return typ
+		return typ, true
 	}
 }
 
-func (g *Generator) generateCopyFunction(class string, fields []string) {
-	g.p(2, fmt.Sprintf("static copy(from: %s, to?: %s): %s {", class, class, class))
+type annotatedField struct {
+	name   string
+	tsType string
+}
+
+func (g *Generator) generateCopyFunction(class string, fields []annotatedField) {
+	from := "from"
+	if len(fields) == 0 {
+		from = "_" // prevent unused variable warning
+	}
+	g.p(2, fmt.Sprintf("static copy(%s: %s, to?: %s): %s {", from, class, class, class))
 	g.p(4, "to = to || {};")
 	for _, field := range fields {
-		g.p(4, fmt.Sprintf("to.%s = from.%s;", field, field))
+		if field.tsType == "" {
+			g.p(4, fmt.Sprintf("to.%s = from.%s;", field.name, field.name))
+		} else {
+			g.p(4, fmt.Sprintf("to.%s = %s.copy(from.%s, to.%s || {});",
+				field.name, field.tsType, field.name, field.name))
+		}
 	}
 	g.p(4, "return to;")
 	g.p(2, "}")
