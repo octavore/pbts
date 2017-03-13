@@ -236,11 +236,12 @@ func (g *Generator) generateCopyFunction(class string, fields []annotatedField) 
 		if field.tsType == "" {
 			g.p(4, fmt.Sprintf("to.%s = from.%s;", field.name, field.name))
 		} else {
-			g.p(4, fmt.Sprintf("to.%s = from.%s ? %s.copy(from.%s || {}, to.%s || {}) : null;",
-				field.name, field.name,
-				field.tsType,
+			g.p(4, fmt.Sprintf("if ('%s' in from) {", field.name))
+			g.p(6, fmt.Sprintf("to.%s = %s.copy(from.%s || {}, to.%s || {});",
+				field.name, field.tsType,
 				field.name, field.name),
 			)
+			g.p(4, fmt.Sprintf("}"))
 		}
 	}
 	g.p(4, "return to;")
