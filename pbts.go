@@ -201,6 +201,9 @@ func (g *Generator) goTypeToTSType(t reflect.Type, tag *reflect.StructTag) (stri
 		return g.goTypeToTSType(t.Elem(), tag)
 	case reflect.Slice:
 		typ, _ := g.goTypeToTSType(t.Elem(), tag)
+		if typ == "uint8" { // byte array
+			return "string", true
+		}
 		typ += "[]"
 		return typ, true
 	case reflect.Struct:
