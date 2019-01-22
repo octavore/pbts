@@ -15,14 +15,16 @@ const filePreamble = "// DO NOT EDIT! This file is generated automatically by pb
 
 func NewGenerator(w io.Writer) *Generator {
 	return &Generator{
-		out:   w,
-		enums: map[string]string{},
+		out:    w,
+		enums:  map[string]string{},
+		oneofs: map[string][]string{},
 	}
 }
 
 type Generator struct {
 	models []reflect.Type
 	enums  map[string]string
+	oneofs map[string][]string
 	out    io.Writer
 }
 
@@ -44,8 +46,10 @@ func (g *Generator) Write() {
 	for _, i := range g.models {
 		g.convert(i)
 	}
+
+	// write enums
 	sortedEnums := []string{}
-	for t, _ := range g.enums {
+	for t := range g.enums {
 		sortedEnums = append(sortedEnums, t)
 	}
 	sort.Strings(sortedEnums)
@@ -53,6 +57,9 @@ func (g *Generator) Write() {
 		e := g.enums[t]
 		g.convertEnum(t, e)
 	}
+
+	// write oneofs
+	g.writeOneofs()
 }
 
 func (g *Generator) p(indent int, s string) {
@@ -69,6 +76,28 @@ func (g *Generator) convertEnum(typeName, enumName string) {
 	if len(enums) > 0 {
 		sort.Strings(enums)
 		g.p(0, fmt.Sprintf("export type %s = %s;", typeName, strings.Join(enums, " | ")))
+	}
+}
+
+func (g *Generator) writeOneofs() {
+	if len(g.oneofs) > 0 {
+		g.p(0, "")
+		g.p(0, "// oneof types")
+	}
+	sortedOneofs := []string{}
+	for t := range g.oneofs {
+		sortedOneofs = append(sortedOneofs, t)
+	}
+	sort.Strings(sortedOneofs)
+	for _, oneofName := range sortedOneofs {
+		values := g.oneofs[oneofName]
+		if len(values) > 0 {
+			sort.Strings(values)
+			for i := 0; i < len(values); i++ {
+				values[i] = fmt.Sprintf("'%s'", values[i])
+			}
+			g.p(0, fmt.Sprintf("export type %s = %s;", oneofName, strings.Join(values, " | ")))
+		}
 	}
 }
 
@@ -123,6 +152,14 @@ func (g *Generator) convert(v reflect.Type) {
 
 		for _, key := range keys {
 			prop := sp.OneofTypes[key]
+			// store fields for typing later
+			oneOfField := v.Field(prop.Field)
+			oneofName := v.Name() + "_" + oneOfField.Name + "OneOf"
+			if g.oneofs[oneofName] == nil {
+				g.oneofs[oneofName] = []string{}
+			}
+			g.oneofs[oneofName] = append(g.oneofs[oneofName], key)
+
 			// merge oneof fields into parent
 			f2 := g.subconvertFields(prop.Type.Elem())
 			fields = append(fields, f2...)
