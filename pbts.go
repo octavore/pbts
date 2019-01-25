@@ -92,11 +92,11 @@ func (g *Generator) writeOneofs() {
 	for _, oneofName := range sortedOneofs {
 		values := g.oneofs[oneofName]
 		if len(values) > 0 {
-			sort.Strings(values)
+			g.p(0, fmt.Sprintf("export enum %s {", oneofName))
 			for i := 0; i < len(values); i++ {
-				values[i] = fmt.Sprintf("'%s'", values[i])
+				g.p(0, fmt.Sprintf("  %s = '%s',", strings.Title(values[i]), values[i]))
 			}
-			g.p(0, fmt.Sprintf("export type %s = %s;", oneofName, strings.Join(values, " | ")))
+			g.p(0, fmt.Sprintf("}"))
 		}
 	}
 }
@@ -151,12 +151,15 @@ func (g *Generator) convert(v reflect.Type) {
 		sort.Strings(keys)
 
 		for _, key := range keys {
-			prop := sp.OneofTypes[key]
 			// store fields for typing later
+			prop := sp.OneofTypes[key]
 			oneOfField := v.Field(prop.Field)
 			oneofName := v.Name() + "_" + oneOfField.Name + "OneOf"
 			if g.oneofs[oneofName] == nil {
 				g.oneofs[oneofName] = []string{}
+			}
+			if prop.Prop.JSONName != "" {
+				key = prop.Prop.JSONName
 			}
 			g.oneofs[oneofName] = append(g.oneofs[oneofName], key)
 
