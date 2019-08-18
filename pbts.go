@@ -204,10 +204,11 @@ func tsFieldname(f reflect.StructField) string {
 
 // converts native go types to native ts types
 var typeMap = map[string]string{
-	"int":   "number", // todo: actually check number of bits in int
-	"int32": "number",
-	"int64": "string",
-	"bool":  "boolean",
+	"int":    "number", // todo: actually check number of bits in int
+	"int32":  "number",
+	"uint32": "number",
+	"int64":  "string",
+	"bool":   "boolean",
 }
 
 type protoEnum interface {
