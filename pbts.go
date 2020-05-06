@@ -9,6 +9,7 @@ import (
 	"sort"
 
 	"github.com/golang/protobuf/proto"
+	_struct "github.com/golang/protobuf/ptypes/struct"
 	"github.com/iancoleman/strcase"
 )
 
@@ -233,6 +234,7 @@ type protoEnum interface {
 }
 
 var protoEnumType = reflect.TypeOf((*protoEnum)(nil)).Elem()
+var protoStructValueType = reflect.TypeOf(_struct.Value{})
 
 // convert a go type to a TS type, and whether it was a TS builtin type or not.
 // note: protobuf "oneof" is not supported
@@ -265,6 +267,9 @@ func (g *Generator) goTypeToTSType(t reflect.Type, tag *reflect.StructTag) (stri
 		typ += "[]"
 		return typ, true
 	case reflect.Struct:
+		if t == protoStructValueType {
+			return "any", true
+		}
 		return t.Name(), false
 	case reflect.Interface:
 		return "any", true

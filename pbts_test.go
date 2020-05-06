@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/golang/protobuf/proto"
+	_struct "github.com/golang/protobuf/ptypes/struct"
 )
 
 type TestStruct struct {
@@ -129,6 +130,31 @@ export enum TestEnum {
   Bar = "bar",
   Foo = "foo",
   Unknown = "unknown",
+}`
+
+	if strings.TrimSpace(buf.String()) != strings.TrimSpace(expected) {
+		t.Error(buf.String())
+		t.Error(expected)
+	}
+}
+
+func TestProtoStructOutput(t *testing.T) {
+	buf := &bytes.Buffer{}
+	g := NewGenerator(buf)
+	g.NativeEnums = true
+	g.RegisterMany(
+		_struct.Struct{},
+	)
+	g.Write()
+
+	expected := filePreamble + `
+export abstract class Struct {
+  fields?: { [key: string]: any; };
+  static copy(from: Struct, to?: Struct): Struct {
+    to = to || {};
+    to.fields = from.fields;
+    return to;
+  }
 }`
 
 	if strings.TrimSpace(buf.String()) != strings.TrimSpace(expected) {
