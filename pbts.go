@@ -9,6 +9,7 @@ import (
 	"sort"
 
 	"github.com/golang/protobuf/proto"
+	"github.com/iancoleman/strcase"
 )
 
 const filePreamble = "// DO NOT EDIT! This file is generated automatically by pbts (github.com/octavore/pbts)\n"
@@ -26,6 +27,8 @@ type Generator struct {
 	enums  map[string]string
 	oneofs map[string][]string
 	out    io.Writer
+
+	NativeEnums bool
 }
 
 func (g *Generator) RegisterMany(l ...interface{}) {
@@ -69,14 +72,28 @@ func (g *Generator) p(indent int, s string) {
 
 func (g *Generator) convertEnum(typeName, enumName string) {
 	enumMap := proto.EnumValueMap(enumName)
+	if len(enumMap) == 0 {
+		return
+	}
+	if g.NativeEnums {
+		enums := []string{}
+		for enum := range enumMap {
+			enums = append(enums, fmt.Sprintf("%s", enum))
+		}
+		sort.Strings(enums)
+		g.p(0, fmt.Sprintf("export enum %s {", typeName))
+		for _, e := range enums {
+			g.p(2, fmt.Sprintf("%s = \"%s\",", strcase.ToCamel(e), e))
+		}
+		g.p(0, "}")
+		return
+	}
 	enums := []string{}
 	for enum := range enumMap {
 		enums = append(enums, fmt.Sprintf("'%s'", enum))
 	}
-	if len(enums) > 0 {
-		sort.Strings(enums)
-		g.p(0, fmt.Sprintf("export type %s = %s;", typeName, strings.Join(enums, " | ")))
-	}
+	sort.Strings(enums)
+	g.p(0, fmt.Sprintf("export type %s = %s;", typeName, strings.Join(enums, " | ")))
 }
 
 func (g *Generator) writeOneofs() {
