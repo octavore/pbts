@@ -9,6 +9,7 @@ import (
 	"sort"
 
 	"github.com/golang/protobuf/proto"
+	"github.com/golang/protobuf/ptypes/any"
 	_struct "github.com/golang/protobuf/ptypes/struct"
 	"github.com/iancoleman/strcase"
 )
@@ -233,8 +234,12 @@ type protoEnum interface {
 	EnumDescriptor() ([]byte, []int)
 }
 
-var protoEnumType = reflect.TypeOf((*protoEnum)(nil)).Elem()
-var protoStructValueType = reflect.TypeOf(_struct.Value{})
+var (
+	protoEnumType        = reflect.TypeOf((*protoEnum)(nil)).Elem()
+	protoStructValueType = reflect.TypeOf(_struct.Value{})
+	protoStructType      = reflect.TypeOf(_struct.Struct{})
+	protoAnyType         = reflect.TypeOf(any.Any{})
+)
 
 // convert a go type to a TS type, and whether it was a TS builtin type or not.
 // note: protobuf "oneof" is not supported
@@ -267,7 +272,13 @@ func (g *Generator) goTypeToTSType(t reflect.Type, tag *reflect.StructTag) (stri
 		typ += "[]"
 		return typ, true
 	case reflect.Struct:
+		if t == protoStructType {
+			return "{[key: string]: any}", true
+		}
 		if t == protoStructValueType {
+			return "any", true
+		}
+		if t == protoAnyType {
 			return "any", true
 		}
 		return t.Name(), false
@@ -276,7 +287,7 @@ func (g *Generator) goTypeToTSType(t reflect.Type, tag *reflect.StructTag) (stri
 	case reflect.Map:
 		k, _ := g.goTypeToTSType(t.Key(), tag)
 		e, _ := g.goTypeToTSType(t.Elem(), tag)
-		return fmt.Sprintf("{ [key: %s]: %s; }", k, e), true
+		return fmt.Sprintf("{[key: %s]: %s}", k, e), true
 	default:
 		typ := t.Name()
 		if alt, ok := typeMap[typ]; ok {

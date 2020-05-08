@@ -30,7 +30,7 @@ export abstract class TestStruct {
   field?: string;
   fieldInt?: string;
   other_field?: string;
-  metadata?: { [key: string]: number; };
+  metadata?: {[key: string]: number};
   tags?: string[];
   static copy(from: TestStruct, to?: TestStruct): TestStruct {
     to = to || {};
@@ -149,7 +149,7 @@ func TestProtoStructOutput(t *testing.T) {
 
 	expected := filePreamble + `
 export abstract class Struct {
-  fields?: { [key: string]: any; };
+  fields?: {[key: string]: any};
   static copy(from: Struct, to?: Struct): Struct {
     to = to || {};
     to.fields = from.fields;
