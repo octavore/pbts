@@ -130,6 +130,12 @@ func (g *Generator) subconvertFields(v reflect.Type) []annotatedField {
 	for j := 0; j < v.NumField(); j++ {
 		f := v.Field(j)
 
+		// ignore private fields
+		exported := f.PkgPath == ""
+		if !exported {
+			continue
+		}
+
 		// name
 		name := tsFieldname(f)
 		if name == "-" {
