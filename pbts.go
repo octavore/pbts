@@ -158,8 +158,24 @@ func (g *Generator) subconvertFields(v reflect.Type) []annotatedField {
 	return fields
 }
 
+func startsWithLower(s string) bool {
+	for _, c := range s {
+		if strings.ToLower(string(c)) == string(c) {
+			return true
+		}
+		break
+	}
+	return false
+}
+
 func (g *Generator) convert(v reflect.Type) {
-	g.p(0, "export abstract class "+v.Name()+" {")
+	className := v.Name()
+	// ignore unexported types
+	if startsWithLower(className) {
+		return
+	}
+
+	g.p(0, "export abstract class "+className+" {")
 	fields := g.subconvertFields(v)
 
 	// handle oneof fields
