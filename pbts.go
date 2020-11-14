@@ -43,6 +43,8 @@ func (g *Generator) Register(i interface{}) {
 	if v.Kind() != reflect.Struct {
 		panic("can only register struct types")
 	}
+	// spv := protoreflect.ValueOf(i)
+	// fmt.Println(spv)
 	g.models = append(g.models, v)
 }
 

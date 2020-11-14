@@ -1,0 +1,38 @@
+syntax = "proto2";
+
+package pbts;
+
+option go_package = "github.com/octavore/pbts/internal/test";
+
+import "google/protobuf/struct.proto";
+
+message TestMessage {
+  optional string str_field = 1;
+  optional int32 int32_field = 2;
+  optional int64 int64_field = 3;
+  repeated string str_list = 4;
+  map<string, int64> metadata = 10;
+}
+
+message TestNestedMessage {
+  optional string str_field = 1;
+}
+
+message Filter {
+  optional string id = 1;
+  optional string kind = 2;
+  optional string op = 3;
+}
+
+message TestGoogleStruct {
+  optional google.protobuf.Struct struct_field = 1;
+}
+
+message TestEnumStruct {
+  enum TestEnum {
+    unknown = 0;
+    foo = 1;
+    bar = 2;
+  }
+  optional TestEnum enum_field = 1;
+}
