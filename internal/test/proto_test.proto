@@ -36,3 +36,16 @@ message TestEnumStruct {
   }
   optional TestEnum enum_field = 1;
 }
+
+message TestOneofStruct {
+  message Stock {
+    optional string name = 1;
+  }
+  message Currency {
+    optional string country = 1;
+  }
+  oneof instrument {
+    Stock stock = 1;
+    Currency currency = 2;
+  }
+}

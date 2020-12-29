@@ -368,6 +368,180 @@ func (x *TestEnumStruct) GetEnumField() TestEnumStruct_TestEnum {
 	return TestEnumStruct_unknown
 }
 
+type TestOneofStruct struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Types that are assignable to Instrument:
+	//	*TestOneofStruct_Stock_
+	//	*TestOneofStruct_Currency_
+	Instrument isTestOneofStruct_Instrument `protobuf_oneof:"instrument"`
+}
+
+func (x *TestOneofStruct) Reset() {
+	*x = TestOneofStruct{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_internal_test_proto_test_proto_msgTypes[5]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *TestOneofStruct) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TestOneofStruct) ProtoMessage() {}
+
+func (x *TestOneofStruct) ProtoReflect() protoreflect.Message {
+	mi := &file_internal_test_proto_test_proto_msgTypes[5]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TestOneofStruct.ProtoReflect.Descriptor instead.
+func (*TestOneofStruct) Descriptor() ([]byte, []int) {
+	return file_internal_test_proto_test_proto_rawDescGZIP(), []int{5}
+}
+
+func (m *TestOneofStruct) GetInstrument() isTestOneofStruct_Instrument {
+	if m != nil {
+		return m.Instrument
+	}
+	return nil
+}
+
+func (x *TestOneofStruct) GetStock() *TestOneofStruct_Stock {
+	if x, ok := x.GetInstrument().(*TestOneofStruct_Stock_); ok {
+		return x.Stock
+	}
+	return nil
+}
+
+func (x *TestOneofStruct) GetCurrency() *TestOneofStruct_Currency {
+	if x, ok := x.GetInstrument().(*TestOneofStruct_Currency_); ok {
+		return x.Currency
+	}
+	return nil
+}
+
+type isTestOneofStruct_Instrument interface {
+	isTestOneofStruct_Instrument()
+}
+
+type TestOneofStruct_Stock_ struct {
+	Stock *TestOneofStruct_Stock `protobuf:"bytes,1,opt,name=stock,oneof"`
+}
+
+type TestOneofStruct_Currency_ struct {
+	Currency *TestOneofStruct_Currency `protobuf:"bytes,2,opt,name=currency,oneof"`
+}
+
+func (*TestOneofStruct_Stock_) isTestOneofStruct_Instrument() {}
+
+func (*TestOneofStruct_Currency_) isTestOneofStruct_Instrument() {}
+
+type TestOneofStruct_Stock struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Name *string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
+}
+
+func (x *TestOneofStruct_Stock) Reset() {
+	*x = TestOneofStruct_Stock{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_internal_test_proto_test_proto_msgTypes[7]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *TestOneofStruct_Stock) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TestOneofStruct_Stock) ProtoMessage() {}
+
+func (x *TestOneofStruct_Stock) ProtoReflect() protoreflect.Message {
+	mi := &file_internal_test_proto_test_proto_msgTypes[7]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TestOneofStruct_Stock.ProtoReflect.Descriptor instead.
+func (*TestOneofStruct_Stock) Descriptor() ([]byte, []int) {
+	return file_internal_test_proto_test_proto_rawDescGZIP(), []int{5, 0}
+}
+
+func (x *TestOneofStruct_Stock) GetName() string {
+	if x != nil && x.Name != nil {
+		return *x.Name
+	}
+	return ""
+}
+
+type TestOneofStruct_Currency struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Country *string `protobuf:"bytes,1,opt,name=country" json:"country,omitempty"`
+}
+
+func (x *TestOneofStruct_Currency) Reset() {
+	*x = TestOneofStruct_Currency{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_internal_test_proto_test_proto_msgTypes[8]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *TestOneofStruct_Currency) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TestOneofStruct_Currency) ProtoMessage() {}
+
+func (x *TestOneofStruct_Currency) ProtoReflect() protoreflect.Message {
+	mi := &file_internal_test_proto_test_proto_msgTypes[8]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TestOneofStruct_Currency.ProtoReflect.Descriptor instead.
+func (*TestOneofStruct_Currency) Descriptor() ([]byte, []int) {
+	return file_internal_test_proto_test_proto_rawDescGZIP(), []int{5, 1}
+}
+
+func (x *TestOneofStruct_Currency) GetCountry() string {
+	if x != nil && x.Country != nil {
+		return *x.Country
+	}
+	return ""
+}
+
 var File_internal_test_proto_test_proto protoreflect.FileDescriptor
 
 var file_internal_test_proto_test_proto_rawDesc = []byte{
@@ -411,9 +585,23 @@ var file_internal_test_proto_test_proto_rawDesc = []byte{
 	0x6e, 0x75, 0x6d, 0x46, 0x69, 0x65, 0x6c, 0x64, 0x22, 0x29, 0x0a, 0x08, 0x54, 0x65, 0x73, 0x74,
 	0x45, 0x6e, 0x75, 0x6d, 0x12, 0x0b, 0x0a, 0x07, 0x75, 0x6e, 0x6b, 0x6e, 0x6f, 0x77, 0x6e, 0x10,
 	0x00, 0x12, 0x07, 0x0a, 0x03, 0x66, 0x6f, 0x6f, 0x10, 0x01, 0x12, 0x07, 0x0a, 0x03, 0x62, 0x61,
-	0x72, 0x10, 0x02, 0x42, 0x28, 0x5a, 0x26, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f,
-	0x6d, 0x2f, 0x6f, 0x63, 0x74, 0x61, 0x76, 0x6f, 0x72, 0x65, 0x2f, 0x70, 0x62, 0x74, 0x73, 0x2f,
-	0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e, 0x61, 0x6c, 0x2f, 0x74, 0x65, 0x73, 0x74,
+	0x72, 0x10, 0x02, 0x22, 0xd5, 0x01, 0x0a, 0x0f, 0x54, 0x65, 0x73, 0x74, 0x4f, 0x6e, 0x65, 0x6f,
+	0x66, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x12, 0x33, 0x0a, 0x05, 0x73, 0x74, 0x6f, 0x63, 0x6b,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x70, 0x62, 0x74, 0x73, 0x2e, 0x54, 0x65,
+	0x73, 0x74, 0x4f, 0x6e, 0x65, 0x6f, 0x66, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x2e, 0x53, 0x74,
+	0x6f, 0x63, 0x6b, 0x48, 0x00, 0x52, 0x05, 0x73, 0x74, 0x6f, 0x63, 0x6b, 0x12, 0x3c, 0x0a, 0x08,
+	0x63, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1e,
+	0x2e, 0x70, 0x62, 0x74, 0x73, 0x2e, 0x54, 0x65, 0x73, 0x74, 0x4f, 0x6e, 0x65, 0x6f, 0x66, 0x53,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x2e, 0x43, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x48, 0x00,
+	0x52, 0x08, 0x63, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x1a, 0x1b, 0x0a, 0x05, 0x53, 0x74,
+	0x6f, 0x63, 0x6b, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x1a, 0x24, 0x0a, 0x08, 0x43, 0x75, 0x72, 0x72, 0x65,
+	0x6e, 0x63, 0x79, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x72, 0x79, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x72, 0x79, 0x42, 0x0c, 0x0a,
+	0x0a, 0x69, 0x6e, 0x73, 0x74, 0x72, 0x75, 0x6d, 0x65, 0x6e, 0x74, 0x42, 0x28, 0x5a, 0x26, 0x67,
+	0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x6f, 0x63, 0x74, 0x61, 0x76, 0x6f,
+	0x72, 0x65, 0x2f, 0x70, 0x62, 0x74, 0x73, 0x2f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e, 0x61, 0x6c,
+	0x2f, 0x74, 0x65, 0x73, 0x74,
 }
 
 var (
@@ -429,26 +617,31 @@ func file_internal_test_proto_test_proto_rawDescGZIP() []byte {
 }
 
 var file_internal_test_proto_test_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_internal_test_proto_test_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_internal_test_proto_test_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_internal_test_proto_test_proto_goTypes = []interface{}{
-	(TestEnumStruct_TestEnum)(0), // 0: pbts.TestEnumStruct.TestEnum
-	(*TestMessage)(nil),          // 1: pbts.TestMessage
-	(*TestNestedMessage)(nil),    // 2: pbts.TestNestedMessage
-	(*Filter)(nil),               // 3: pbts.Filter
-	(*TestGoogleStruct)(nil),     // 4: pbts.TestGoogleStruct
-	(*TestEnumStruct)(nil),       // 5: pbts.TestEnumStruct
-	nil,                          // 6: pbts.TestMessage.MetadataEntry
-	(*_struct.Struct)(nil),       // 7: google.protobuf.Struct
+	(TestEnumStruct_TestEnum)(0),     // 0: pbts.TestEnumStruct.TestEnum
+	(*TestMessage)(nil),              // 1: pbts.TestMessage
+	(*TestNestedMessage)(nil),        // 2: pbts.TestNestedMessage
+	(*Filter)(nil),                   // 3: pbts.Filter
+	(*TestGoogleStruct)(nil),         // 4: pbts.TestGoogleStruct
+	(*TestEnumStruct)(nil),           // 5: pbts.TestEnumStruct
+	(*TestOneofStruct)(nil),          // 6: pbts.TestOneofStruct
+	nil,                              // 7: pbts.TestMessage.MetadataEntry
+	(*TestOneofStruct_Stock)(nil),    // 8: pbts.TestOneofStruct.Stock
+	(*TestOneofStruct_Currency)(nil), // 9: pbts.TestOneofStruct.Currency
+	(*_struct.Struct)(nil),           // 10: google.protobuf.Struct
 }
 var file_internal_test_proto_test_proto_depIdxs = []int32{
-	6, // 0: pbts.TestMessage.metadata:type_name -> pbts.TestMessage.MetadataEntry
-	7, // 1: pbts.TestGoogleStruct.struct_field:type_name -> google.protobuf.Struct
-	0, // 2: pbts.TestEnumStruct.enum_field:type_name -> pbts.TestEnumStruct.TestEnum
-	3, // [3:3] is the sub-list for method output_type
-	3, // [3:3] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	7,  // 0: pbts.TestMessage.metadata:type_name -> pbts.TestMessage.MetadataEntry
+	10, // 1: pbts.TestGoogleStruct.struct_field:type_name -> google.protobuf.Struct
+	0,  // 2: pbts.TestEnumStruct.enum_field:type_name -> pbts.TestEnumStruct.TestEnum
+	8,  // 3: pbts.TestOneofStruct.stock:type_name -> pbts.TestOneofStruct.Stock
+	9,  // 4: pbts.TestOneofStruct.currency:type_name -> pbts.TestOneofStruct.Currency
+	5,  // [5:5] is the sub-list for method output_type
+	5,  // [5:5] is the sub-list for method input_type
+	5,  // [5:5] is the sub-list for extension type_name
+	5,  // [5:5] is the sub-list for extension extendee
+	0,  // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_internal_test_proto_test_proto_init() }
@@ -517,6 +710,46 @@ func file_internal_test_proto_test_proto_init() {
 				return nil
 			}
 		}
+		file_internal_test_proto_test_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*TestOneofStruct); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_internal_test_proto_test_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*TestOneofStruct_Stock); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_internal_test_proto_test_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*TestOneofStruct_Currency); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+	}
+	file_internal_test_proto_test_proto_msgTypes[5].OneofWrappers = []interface{}{
+		(*TestOneofStruct_Stock_)(nil),
+		(*TestOneofStruct_Currency_)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -524,7 +757,7 @@ func file_internal_test_proto_test_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_internal_test_proto_test_proto_rawDesc,
 			NumEnums:      1,
-			NumMessages:   6,
+			NumMessages:   9,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

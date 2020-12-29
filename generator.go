@@ -183,7 +183,7 @@ func (g *Generator) convert(v reflect.Type) {
 	// handle oneof fields
 	sp := proto.GetProperties(v)
 	if len(sp.OneofTypes) > 0 {
-		g.p(2, "")
+		g.p(0, "")
 		g.p(2, "// oneof types:")
 
 		// keys are sorted to ensure deterministic output
