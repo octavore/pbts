@@ -16,8 +16,8 @@ breaking API changes will cause compile time errors.
 
 - a `copy` function is generated to copy data between instances.
 - following protobuf conventions, `int64` types are serialized as strings.
-- the json field name in a proto field tag is preferred to a json field tag
 - proto maps and oneofs are supported
+- the types generated will be satisfied by json generated with `protojson.MarshalOption{EmitDefaultValues: true}`
 
 ## Example Usage
 
@@ -27,8 +27,8 @@ breaking API changes will cause compile time errors.
 writer, _ := os.OpenFile("api.ts", ...)
 g := pbts.NewGenerator(writer)
 g.RegisterMany(
-  MyFirstStruct{},
-  MySecondStruct{},
+  &MyFirstStruct{},
+  &MySecondStruct{},
 )
 g.Write()
 ```
@@ -41,7 +41,6 @@ Import the generated classes into your Typescript project for fun and profit.
 type TestStruct struct {
 	Field      *string           `protobuf:"bytes,1,opt,name=field" json:"field,omitempty"`
 	FieldInt   *int64            `protobuf:"varint,6,opt,name=field_int,json=fieldInt" json:"field_int,omitempty"`
-	OtherField string            `json:"other_field"`
 	Metadata   map[string]int32  `protobuf:"bytes,11,rep,name=metadata" json:"metadata,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	Tags       []string          `protobuf:"bytes,12,rep,name=tags" json:"tags,omitempty"`
 }
@@ -53,17 +52,17 @@ type TestStruct struct {
 export abstract class MyFirstStruct {
   field?: string;
   fieldInt?: string;
-  other_field?: string;
-  metadata?: { [key: string]: number; };
-  tags?: string[];
+  metadata: { [key: string]: number; };
+  tags: string[];
   static copy(from: MyFirstStruct, to?: MyFirstStruct): MyFirstStruct {
-    to = to || {};
-    to.field = from.field;
-    to.fieldInt = from.fieldInt;
-    to.other_field = from.other_field;
-    to.metadata = from.metadata;
-    to.tags = from.tags;
-    return to;
+    if (to) {
+      to.field = from.field;
+      to.fieldInt = from.fieldInt;
+      to.metadata = from.metadata;
+      to.tags = from.tags;
+      return to;
+    }
+    return {...from};
   }
 }
 
