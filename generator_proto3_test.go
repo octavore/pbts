@@ -12,7 +12,10 @@ import (
 func TestProto3Message(t *testing.T) {
 	buf := &bytes.Buffer{}
 	g := NewGenerator(buf)
-	g.RegisterMany(&test.TestProto3Message{})
+	g.RegisterMany(
+		&test.TestProto3Message{}, 
+		&test.TestProto3NestedMessage{},
+	)
 	g.Write()
 
 	expected := loadFixture("TestProto3Message.ts")

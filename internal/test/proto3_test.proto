@@ -12,6 +12,8 @@ message TestProto3Message {
   int32 int32_field = 3;
   int64 int64_field = 4;
   repeated string str_list = 5;
+  TestProto3NestedMessage nested = 6;
+  repeated TestProto3NestedMessage nested_list = 7;
   map<string, int64> metadata = 10;
 }
 
