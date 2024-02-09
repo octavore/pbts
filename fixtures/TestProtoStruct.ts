@@ -3,9 +3,10 @@
 export abstract class Struct {
   fields?: {[key: string]: any};
   static copy(from: Struct, to?: Struct): Struct {
-    to = to || {};
-    to.fields = from.fields;
-    return to;
+    if (to) {
+      to.fields = from.fields;
+      return to;
+    }
+    return {...from};
   }
 }
-

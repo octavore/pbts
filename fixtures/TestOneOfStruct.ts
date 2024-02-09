@@ -5,24 +5,28 @@ export abstract class TestOneofStruct {
   currency?: TestOneofStruct_Currency; // oneof:TestOneofStruct_instrument
   strField?: string; // oneof:TestOneofStruct_instrument
   static copy(from: TestOneofStruct, to?: TestOneofStruct): TestOneofStruct {
-    to = to || {};
-    if ('stock' in from) {
-      to.stock = TestOneofStruct_Stock.copy(from.stock || {}, to.stock || {});
+    if (to) {
+      to.stock = from.stock ? TestOneofStruct_Stock.copy(from.stock) : undefined;
+      to.currency = from.currency ? TestOneofStruct_Currency.copy(from.currency) : undefined;
+      to.strField = from.strField;
+      return to;
     }
-    if ('currency' in from) {
-      to.currency = TestOneofStruct_Currency.copy(from.currency || {}, to.currency || {});
+    return {
+      ...from,
+      stock: from.stock ? TestOneofStruct_Stock.copy(from.stock) : undefined,
+      currency: from.currency ? TestOneofStruct_Currency.copy(from.currency) : undefined,
     }
-    to.strField = from.strField;
-    return to;
   }
 }
 
 export abstract class TestOneofStruct_Stock {
   name?: string;
   static copy(from: TestOneofStruct_Stock, to?: TestOneofStruct_Stock): TestOneofStruct_Stock {
-    to = to || {};
-    to.name = from.name;
-    return to;
+    if (to) {
+      to.name = from.name;
+      return to;
+    }
+    return {...from};
   }
 }
 
@@ -30,10 +34,11 @@ export abstract class TestOneofStruct_Currency {
   country?: string;
   shortCode?: string;
   static copy(from: TestOneofStruct_Currency, to?: TestOneofStruct_Currency): TestOneofStruct_Currency {
-    to = to || {};
-    to.country = from.country;
-    to.shortCode = from.shortCode;
-    return to;
+    if (to) {
+      to.country = from.country;
+      to.shortCode = from.shortCode;
+      return to;
+    }
+    return {...from};
   }
 }
-

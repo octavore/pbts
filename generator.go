@@ -14,7 +14,7 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-const filePreamble = "// DO NOT EDIT! This file is generated automatically by pbts (github.com/octavore/pbts)\n"
+const filePreamble = "// DO NOT EDIT! This file is generated automatically by pbts (github.com/octavore/pbts)"
 
 func NewGenerator(w io.Writer) *Generator {
 	return &Generator{out: w}
@@ -54,9 +54,11 @@ func (g *Generator) RegisterDescriptor(msgDesc protoreflect.MessageDescriptor) {
 func (g *Generator) Write() {
 	g.p(0, filePreamble)
 	for _, m := range g.models {
+		g.p(0, "")
 		g.convert(m)
 	}
 	for _, m := range g.indirectModels {
+		g.p(0, "")
 		g.convert(m)
 	}
 
@@ -101,6 +103,7 @@ func (g *Generator) writeEnums() {
 		return g.enums[i].Name() < g.enums[j].Name()
 	})
 	for _, enum := range g.enums {
+		g.p(0, "")
 		g.convertEnum(enum)
 	}
 }
@@ -152,11 +155,7 @@ func (g *Generator) convert(msg protoreflect.MessageDescriptor) {
 	g.p(0, "export abstract class %s {", className)
 	fields := g.subconvertFields(msg.Fields())
 	g.generateCopyFunction(className, fields)
-	g.p(0, "}\n")
-
-	// for i := 0; i < msg.Oneofs().Len(); i++ {
-	// 	g.oneofs = append(g.oneofs, msg.Oneofs().Get(i))
-	// }
+	g.p(0, "}")
 }
 
 func (g *Generator) fieldToBaseType(f protoreflect.FieldDescriptor) (string, bool) {
@@ -230,25 +229,42 @@ type annotatedField struct {
 	tsType string
 }
 
+func (a *annotatedField) generateCopiedValue() string {
+	if a.tsType == "" {
+		return fmt.Sprintf("from.%s", a.name)
+	}
+	return fmt.Sprintf("from.%s ? %s.copy(from.%s) : undefined", a.name, a.tsType, a.name)
+}
+
 func (g *Generator) generateCopyFunction(class string, fields []annotatedField) {
 	from := "from"
 	if len(fields) == 0 {
 		from = "_" // prevent unused variable warning
 	}
 	g.p(2, "static copy(%s: %s, to?: %s): %s {", from, class, class, class)
-	g.p(4, "to = to || {};")
+	g.p(4, "if (to) {")
 	for _, field := range fields {
-		if field.tsType == "" {
-			g.p(4, "to.%s = from.%s;", field.name, field.name)
-		} else {
-			g.p(4, "if ('%s' in from) {", field.name)
-			g.p(6, "to.%s = %s.copy(from.%s || {}, to.%s || {});",
-				field.name, field.tsType,
-				field.name, field.name,
-			)
-			g.p(4, "}")
+		g.p(6, "to.%s = %s;", field.name, field.generateCopiedValue())
+	}
+	g.p(6, "return to;")
+	g.p(4, "}")
+
+	explicitCopy := []string{}
+	for _, field := range fields {
+		if field.tsType != "" {
+			explicitCopy = append(explicitCopy,
+				fmt.Sprintf("%s: %s,", field.name, field.generateCopiedValue()))
 		}
 	}
-	g.p(4, "return to;")
+	if len(explicitCopy) == 0 {
+		g.p(4, "return {...from};")
+	} else {
+		g.p(4, "return {")
+		g.p(6, "...from,")
+		for _, l := range explicitCopy {
+			g.p(6, l)
+		}
+		g.p(4, "}")
+	}
 	g.p(2, "}")
 }

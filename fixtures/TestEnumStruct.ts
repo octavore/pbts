@@ -3,9 +3,11 @@
 export abstract class TestEnumStruct {
   enumField?: TestEnumStruct_TestEnum;
   static copy(from: TestEnumStruct, to?: TestEnumStruct): TestEnumStruct {
-    to = to || {};
-    to.enumField = from.enumField;
-    return to;
+    if (to) {
+      to.enumField = from.enumField;
+      return to;
+    }
+    return {...from};
   }
 }
 
