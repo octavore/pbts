@@ -18,7 +18,7 @@ export abstract class TestOneofStruct {
       ...from,
       stock: from.stock ? TestOneofStruct_Stock.copy(from.stock) : undefined,
       currency: from.currency ? TestOneofStruct_Currency.copy(from.currency) : undefined,
-    }
+    };
   }
 }
 

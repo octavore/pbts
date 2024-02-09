@@ -118,7 +118,7 @@ func (g *Generator) subconvertFields(v protoreflect.FieldDescriptors) []annotate
 		name := fieldDesc.JSONName()
 		typ, builtin := g.fieldToBaseType(fieldDesc)
 		if typ != "" {
-			field := annotatedField{name: name, required: !fieldDesc.HasPresence()}
+			field := annotatedField{name: name, required: !fieldDesc.HasPresence(), repeated: fieldDesc.IsList()}
 			if !builtin {
 				field.tsType = typ
 			}
@@ -211,6 +211,9 @@ func (g *Generator) fieldToBaseType(f protoreflect.FieldDescriptor) (string, boo
 			v, _ := g.fieldToBaseType(f.MapValue())
 			return fmt.Sprintf("{[key: %s]: %s}", k, v), true
 		}
+		if f.Cardinality() == protoreflect.Repeated {
+			return nameWithParent(f.Message()) + "[]", false
+		}
 		return nameWithParent(f.Message()), false
 	}
 
@@ -230,9 +233,13 @@ type annotatedField struct {
 	name     string
 	tsType   string
 	required bool
+	repeated bool
 }
 
 func (a *annotatedField) generateCopiedValue() string {
+	if a.repeated {
+		return fmt.Sprintf("from.%s.slice()", a.name)
+	}
 	if a.tsType == "" || a.required {
 		return fmt.Sprintf("from.%s", a.name)
 	}
@@ -267,7 +274,7 @@ func (g *Generator) generateCopyFunction(class string, fields []annotatedField) 
 		for _, l := range explicitCopy {
 			g.p(6, l)
 		}
-		g.p(4, "}")
+		g.p(4, "};")
 	}
 	g.p(2, "}")
 }

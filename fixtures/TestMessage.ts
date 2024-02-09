@@ -14,7 +14,7 @@ export abstract class TestMessage {
       to.strField = from.strField;
       to.int32Field = from.int32Field;
       to.int64Field = from.int64Field;
-      to.strList = from.strList;
+      to.strList = from.strList.slice();
       to.metadata = from.metadata;
       return to;
     }
