@@ -52,7 +52,7 @@ func GenerateAll(destPath string, optFns ...optFn) error {
 	})
 	for _, m := range messageTypes {
 		if o.verbose {
-			fmt.Println(m)
+			fmt.Println(m.FullName())
 		}
 		g.RegisterDescriptor(m)
 	}
