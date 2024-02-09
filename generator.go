@@ -140,16 +140,6 @@ func (g *Generator) subconvertFields(v protoreflect.FieldDescriptors) []annotate
 	return fields
 }
 
-func startsWithLower(s string) bool {
-	for _, c := range s {
-		if strings.ToLower(string(c)) == string(c) {
-			return true
-		}
-		break
-	}
-	return false
-}
-
 func (g *Generator) convert(msg protoreflect.MessageDescriptor) {
 	className := nameWithParent(msg)
 	g.p(0, "export interface %s {", className)
@@ -247,11 +237,7 @@ func (a *annotatedField) generateCopiedValue() string {
 }
 
 func (g *Generator) generateCopyFunction(class string, fields []annotatedField) {
-	from := "from"
-	if len(fields) == 0 {
-		from = "_" // prevent unused variable warning
-	}
-	g.p(2, "static copy(%s: %s, to?: %s): %s {", from, class, class, class)
+	g.p(2, "static copy(from: %s, to?: %s): %s {", class, class, class)
 	g.p(4, "if (to) {")
 	for _, field := range fields {
 		g.p(6, "to.%s = %s;", field.name, field.generateCopiedValue())
