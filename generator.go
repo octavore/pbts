@@ -3,156 +3,133 @@ package pbts
 import (
 	"fmt"
 	"io"
-	"reflect"
 	"strings"
 
 	"sort"
 
-	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes/any"
-	_struct "github.com/golang/protobuf/ptypes/struct"
 	"github.com/iancoleman/strcase"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/reflect/protoreflect"
+	"google.golang.org/protobuf/types/known/anypb"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 const filePreamble = "// DO NOT EDIT! This file is generated automatically by pbts (github.com/octavore/pbts)\n"
 
 func NewGenerator(w io.Writer) *Generator {
-	return &Generator{
-		out:    w,
-		enums:  map[string]string{},
-		oneofs: map[string][]string{},
-	}
+	return &Generator{out: w}
 }
 
 type Generator struct {
-	models []reflect.Type
-	enums  map[string]string
-	oneofs map[string][]string
-	out    io.Writer
+	models         []protoreflect.MessageDescriptor
+	indirectModels []protoreflect.MessageDescriptor
+	enums          []protoreflect.EnumDescriptor
+	out            io.Writer
 
 	NativeEnums bool
 }
 
-func (g *Generator) RegisterMany(l ...interface{}) {
-	for _, i := range l {
-		g.Register(i)
+func (g *Generator) RegisterMany(l ...proto.Message) {
+	for _, m := range l {
+		g.Register(m)
 	}
 }
-func (g *Generator) Register(i interface{}) {
-	v := reflect.ValueOf(i).Type()
-	if v.Kind() != reflect.Struct {
-		panic("can only register struct types")
+
+func (g *Generator) Register(msg proto.Message) {
+	g.RegisterDescriptor(msg.ProtoReflect().Descriptor())
+}
+
+func (g *Generator) RegisterDescriptor(msgDesc protoreflect.MessageDescriptor) {
+	g.models = append(g.models, msgDesc)
+
+	for i := 0; i < msgDesc.Messages().Len(); i++ {
+		m := msgDesc.Messages().Get(i)
+		if m.IsMapEntry() {
+			continue
+		}
+		g.indirectModels = append(g.indirectModels, m)
 	}
-	// spv := protoreflect.ValueOf(i)
-	// fmt.Println(spv)
-	g.models = append(g.models, v)
 }
 
 func (g *Generator) Write() {
 	g.p(0, filePreamble)
-	for _, i := range g.models {
-		g.convert(i)
+	for _, m := range g.models {
+		g.convert(m)
+	}
+	for _, m := range g.indirectModels {
+		g.convert(m)
 	}
 
 	// write enums
-	sortedEnums := []string{}
-	for t := range g.enums {
-		sortedEnums = append(sortedEnums, t)
-	}
-	sort.Strings(sortedEnums)
-	for _, t := range sortedEnums {
-		e := g.enums[t]
-		g.convertEnum(t, e)
-	}
-
-	// write oneofs
-	g.writeOneofs()
+	g.writeEnums()
 }
 
-func (g *Generator) p(indent int, s string) {
+func (g *Generator) p(indent int, s string, args ...any) {
 	spaces := strings.Repeat(" ", indent)
-	fmt.Fprint(g.out, spaces, s, "\n")
+	fmt.Fprintf(g.out, spaces+s+"\n", args...)
 }
 
-func (g *Generator) convertEnum(typeName, enumName string) {
-	enumMap := proto.EnumValueMap(enumName)
-	if len(enumMap) == 0 {
-		return
-	}
+func (g *Generator) convertEnum(e protoreflect.EnumDescriptor) {
+	enumValues := e.Values()
 	if g.NativeEnums {
 		enums := []string{}
-		for enum := range enumMap {
-			enums = append(enums, fmt.Sprintf("%s", enum))
+		for i := 0; i < enumValues.Len(); i++ {
+			enum := enumValues.Get(i)
+			enums = append(enums, fmt.Sprintf("%s", enum.Name()))
 		}
 		sort.Strings(enums)
-		g.p(0, fmt.Sprintf("export enum %s {", typeName))
+		g.p(0, "export enum %s {", nameWithParent(e))
 		for _, e := range enums {
-			g.p(2, fmt.Sprintf("%s = \"%s\",", strcase.ToCamel(e), e))
+			g.p(2, "%s = \"%s\",", strcase.ToCamel(e), e)
 		}
 		g.p(0, "}")
 		return
 	}
+
 	enums := []string{}
-	for enum := range enumMap {
-		enums = append(enums, fmt.Sprintf("'%s'", enum))
+	for i := 0; i < enumValues.Len(); i++ {
+		enum := enumValues.Get(i)
+		enums = append(enums, fmt.Sprintf("'%s'", enum.Name()))
 	}
+
 	sort.Strings(enums)
-	g.p(0, fmt.Sprintf("export type %s = %s;", typeName, strings.Join(enums, " | ")))
+	g.p(0, "export type %s = %s;", nameWithParent(e), strings.Join(enums, " | "))
 }
 
-func (g *Generator) writeOneofs() {
-	if len(g.oneofs) > 0 {
-		g.p(0, "")
-		g.p(0, "// oneof types")
-	}
-	sortedOneofs := []string{}
-	for t := range g.oneofs {
-		sortedOneofs = append(sortedOneofs, t)
-	}
-	sort.Strings(sortedOneofs)
-	for _, oneofName := range sortedOneofs {
-		values := g.oneofs[oneofName]
-		if len(values) > 0 {
-			g.p(0, fmt.Sprintf("export enum %s {", oneofName))
-			for i := 0; i < len(values); i++ {
-				g.p(0, fmt.Sprintf("  %s = '%s',", strings.Title(values[i]), values[i]))
-			}
-			g.p(0, fmt.Sprintf("}"))
-		}
+func (g *Generator) writeEnums() {
+	sort.Slice(g.enums, func(i, j int) bool {
+		return g.enums[i].Name() < g.enums[j].Name()
+	})
+	for _, enum := range g.enums {
+		g.convertEnum(enum)
 	}
 }
-
-const typeFmt = "%s?: %s;"
 
 // subconvertFields take a go Type and converts all the fields
 // for that Type as Typescript fields. i.e. `myField?: aTypeScriptType`.
 // Returns the list of field names.
-func (g *Generator) subconvertFields(v reflect.Type) []annotatedField {
+func (g *Generator) subconvertFields(v protoreflect.FieldDescriptors) []annotatedField {
 	fields := []annotatedField{}
-	for j := 0; j < v.NumField(); j++ {
-		f := v.Field(j)
-
-		// ignore private fields
-		exported := f.PkgPath == ""
-		if !exported {
-			continue
-		}
-
-		// name
-		name := tsFieldname(f)
-		if name == "-" {
-			continue
-		}
-
-		// type
-		typ, builtin := g.goTypeToTSType(f.Type, &f.Tag)
+	for j := 0; j < v.Len(); j++ {
+		fieldDesc := v.Get(j)
+		name := fieldDesc.JSONName()
+		typ, builtin := g.fieldToBaseType(fieldDesc)
 		if typ != "" {
 			field := annotatedField{name: name}
 			if !builtin {
 				field.tsType = typ
 			}
 			fields = append(fields, field)
-			g.p(2, fmt.Sprintf(typeFmt, name, typ))
+
+			comment := ""
+			if fieldDesc.ContainingOneof() != nil {
+				comment = fmt.Sprintf(" // oneof:%s", nameWithParent(fieldDesc.ContainingOneof()))
+			}
+			if fieldDesc.HasPresence() || fieldDesc.Cardinality() == protoreflect.Repeated {
+				g.p(2, "%s?: %s;%s", name, typ, comment)
+			} else {
+				g.p(2, "%s: %s;%s", name, typ, comment)
+			}
 		} else {
 			g.p(2, "// skipped field: "+name)
 		}
@@ -170,155 +147,82 @@ func startsWithLower(s string) bool {
 	return false
 }
 
-func (g *Generator) convert(v reflect.Type) {
-	className := v.Name()
-	// ignore unexported types
-	if startsWithLower(className) {
-		return
-	}
-
-	g.p(0, "export abstract class "+className+" {")
-	fields := g.subconvertFields(v)
-
-	// handle oneof fields
-	sp := proto.GetProperties(v)
-	if len(sp.OneofTypes) > 0 {
-		g.p(0, "")
-		g.p(2, "// oneof types:")
-
-		// keys are sorted to ensure deterministic output
-		keys := []string{}
-		for key := range sp.OneofTypes {
-			keys = append(keys, key)
-		}
-		sort.Strings(keys)
-
-		for _, key := range keys {
-			// store fields for typing later
-			prop := sp.OneofTypes[key]
-			oneOfField := v.Field(prop.Field)
-			oneofName := v.Name() + "_" + oneOfField.Name + "OneOf"
-			if g.oneofs[oneofName] == nil {
-				g.oneofs[oneofName] = []string{}
-			}
-			if prop.Prop.JSONName != "" {
-				key = prop.Prop.JSONName
-			}
-			g.oneofs[oneofName] = append(g.oneofs[oneofName], key)
-
-			// merge oneof fields into parent
-			f2 := g.subconvertFields(prop.Type.Elem())
-			fields = append(fields, f2...)
-		}
-	}
-	g.generateCopyFunction(v.Name(), fields)
+func (g *Generator) convert(msg protoreflect.MessageDescriptor) {
+	className := nameWithParent(msg)
+	g.p(0, "export abstract class %s {", className)
+	fields := g.subconvertFields(msg.Fields())
+	g.generateCopyFunction(className, fields)
 	g.p(0, "}\n")
+
+	// for i := 0; i < msg.Oneofs().Len(); i++ {
+	// 	g.oneofs = append(g.oneofs, msg.Oneofs().Get(i))
+	// }
 }
 
-// helper function to extract subtags, e.g. `protobuf:"json=foo"`
-func lookupSubTag(tag reflect.StructTag, tagName, subTag string) (string, bool) {
-	t, ok := tag.Lookup(tagName)
-	if !ok {
-		return "", false
+func (g *Generator) fieldToBaseType(f protoreflect.FieldDescriptor) (string, bool) {
+	// 1. builtin kinds
+	builtin := ""
+	switch f.Kind() {
+	case protoreflect.BoolKind:
+		builtin = "boolean"
+	case protoreflect.StringKind:
+		builtin = "string"
+	case protoreflect.Int32Kind,
+		protoreflect.Sint32Kind,
+		protoreflect.Uint32Kind,
+		protoreflect.FloatKind:
+		builtin = "number"
+
+	case protoreflect.Int64Kind,
+		protoreflect.Sint64Kind,
+		protoreflect.Uint64Kind:
+		builtin = "string"
 	}
-	tParts := strings.Split(t, ",")
-	prefix := subTag + "="
-	for _, part := range tParts {
-		if strings.HasPrefix(part, prefix) {
-			return strings.TrimPrefix(part, prefix), true
+	if builtin != "" {
+		if f.Cardinality() == protoreflect.Repeated {
+			builtin += "[]"
 		}
+		return builtin, true
 	}
-	return "", false
-}
+	// case protoreflect.Sfixed32Kind:
+	// case protoreflect.Fixed32Kind:
+	// case protoreflect.Sfixed64Kind:
+	// case protoreflect.Fixed64Kind:
+	// case protoreflect.DoubleKind:
+	// case protoreflect.BytesKind:
 
-// extract the field name from the field. prefers protobuf
-// declared json name if it exists.
-func tsFieldname(f reflect.StructField) string {
-	proto, ok := lookupSubTag(f.Tag, "protobuf", "json")
-	if ok {
-		return proto
-	}
-	json, ok := f.Tag.Lookup("json")
-	if ok {
-		return strings.Split(json, ",")[0]
-	}
-	return strings.ToLower(f.Name)
-}
-
-// converts native go types to native ts types
-var typeMap = map[string]string{
-	"int":    "number", // todo: actually check number of bits in int
-	"int32":  "number",
-	"uint32": "number",
-	"int64":  "string",
-	"bool":   "boolean",
-}
-
-type protoEnum interface {
-	EnumDescriptor() ([]byte, []int)
-}
-
-var (
-	protoEnumType        = reflect.TypeOf((*protoEnum)(nil)).Elem()
-	protoStructValueType = reflect.TypeOf(_struct.Value{})
-	protoStructType      = reflect.TypeOf(_struct.Struct{})
-	protoAnyType         = reflect.TypeOf(any.Any{})
-)
-
-// convert a go type to a TS type, and whether it was a TS builtin type or not.
-// note: protobuf "oneof" is not supported
-func (g *Generator) goTypeToTSType(t reflect.Type, tag *reflect.StructTag) (string, bool) {
-	if tag != nil {
-		// keep track of enums for later generation
-		// AssignableTo is not strictly speaking necessary, rather it is a
-		// helper to avoid unnecessary tag checks.
-		if t.Name() != "" && t.AssignableTo(protoEnumType) {
-			enum, ok := lookupSubTag(*tag, "protobuf", "enum")
-			if ok {
-				g.enums[t.Name()] = enum
-			}
-		}
-
-		// do not generate oneof types
-		if _, ok := tag.Lookup("protobuf_oneof"); ok {
-			return "", false
-		}
+	// 2. enum kinds
+	if f.Kind() == protoreflect.EnumKind {
+		g.enums = append(g.enums, f.Enum())
+		return nameWithParent(f.Enum()), true
 	}
 
-	switch t.Kind() {
-	case reflect.Ptr:
-		return g.goTypeToTSType(t.Elem(), tag)
-	case reflect.Slice:
-		typ, _ := g.goTypeToTSType(t.Elem(), tag)
-		if typ == "uint8" { // byte array
-			return "string", true
-		}
-		typ += "[]"
-		return typ, true
-	case reflect.Struct:
-		if t == protoStructType {
-			return "{[key: string]: any}", true
-		}
-		if t == protoStructValueType {
+	// 3. message kinds
+	if f.Kind() == protoreflect.MessageKind {
+		if f.Message() == (&structpb.Value{}).ProtoReflect().Descriptor() {
 			return "any", true
 		}
-		if t == protoAnyType {
+		if f.Message() == (&anypb.Any{}).ProtoReflect().Descriptor() {
 			return "any", true
 		}
-		return t.Name(), false
-	case reflect.Interface:
-		return "any", true
-	case reflect.Map:
-		k, _ := g.goTypeToTSType(t.Key(), tag)
-		e, _ := g.goTypeToTSType(t.Elem(), tag)
-		return fmt.Sprintf("{[key: %s]: %s}", k, e), true
-	default:
-		typ := t.Name()
-		if alt, ok := typeMap[typ]; ok {
-			return alt, true
+		if f.IsMap() {
+			k, _ := g.fieldToBaseType(f.MapKey())
+			v, _ := g.fieldToBaseType(f.MapValue())
+			return fmt.Sprintf("{[key: %s]: %s}", k, v), true
 		}
-		return typ, true
+		return nameWithParent(f.Message()), false
 	}
+
+	return "", true
+}
+
+func nameWithParent(e protoreflect.Descriptor) string {
+	name := e.Name()
+	_, isFileParent := e.Parent().(protoreflect.FileDescriptor)
+	if e.Parent() != nil && !isFileParent {
+		return string(e.Parent().Name() + "_" + name)
+	}
+	return string(name)
 }
 
 type annotatedField struct {
@@ -331,18 +235,18 @@ func (g *Generator) generateCopyFunction(class string, fields []annotatedField) 
 	if len(fields) == 0 {
 		from = "_" // prevent unused variable warning
 	}
-	g.p(2, fmt.Sprintf("static copy(%s: %s, to?: %s): %s {", from, class, class, class))
+	g.p(2, "static copy(%s: %s, to?: %s): %s {", from, class, class, class)
 	g.p(4, "to = to || {};")
 	for _, field := range fields {
 		if field.tsType == "" {
-			g.p(4, fmt.Sprintf("to.%s = from.%s;", field.name, field.name))
+			g.p(4, "to.%s = from.%s;", field.name, field.name)
 		} else {
-			g.p(4, fmt.Sprintf("if ('%s' in from) {", field.name))
-			g.p(6, fmt.Sprintf("to.%s = %s.copy(from.%s || {}, to.%s || {});",
+			g.p(4, "if ('%s' in from) {", field.name)
+			g.p(6, "to.%s = %s.copy(from.%s || {}, to.%s || {});",
 				field.name, field.tsType,
-				field.name, field.name),
+				field.name, field.name,
 			)
-			g.p(4, fmt.Sprintf("}"))
+			g.p(4, "}")
 		}
 	}
 	g.p(4, "return to;")

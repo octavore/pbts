@@ -3,10 +3,9 @@ module github.com/octavore/pbts
 go 1.21
 
 require (
-	github.com/golang/protobuf v1.5.3
-	github.com/iancoleman/strcase v0.2.0
-	github.com/stretchr/testify v1.8.2
-	google.golang.org/protobuf v1.30.0
+	github.com/iancoleman/strcase v0.3.0
+	github.com/stretchr/testify v1.8.4
+	google.golang.org/protobuf v1.32.0
 )
 
 require (

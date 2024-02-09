@@ -5,9 +5,9 @@ import (
 	"embed"
 	"testing"
 
-	_struct "github.com/golang/protobuf/ptypes/struct"
 	"github.com/octavore/pbts/internal/test"
 	"github.com/stretchr/testify/assert"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 //go:embed fixtures
@@ -24,7 +24,7 @@ func loadFixture(name string) string {
 func TestOutput(t *testing.T) {
 	buf := &bytes.Buffer{}
 	g := NewGenerator(buf)
-	g.RegisterMany(test.TestMessage{})
+	g.RegisterMany(&test.TestMessage{})
 	g.Write()
 
 	expected := loadFixture("TestMessage.ts")
@@ -34,7 +34,7 @@ func TestOutput(t *testing.T) {
 func TestEnumOutput(t *testing.T) {
 	buf := &bytes.Buffer{}
 	g := NewGenerator(buf)
-	g.RegisterMany(test.TestEnumStruct{})
+	g.RegisterMany(&test.TestEnumStruct{})
 	g.Write()
 
 	expected := loadFixture("TestEnumStruct.ts")
@@ -45,18 +45,18 @@ func TestNativeEnumOutput(t *testing.T) {
 	buf := &bytes.Buffer{}
 	g := NewGenerator(buf)
 	g.NativeEnums = true
-	g.RegisterMany(test.TestEnumStruct{})
+	g.RegisterMany(&test.TestEnumStruct{})
 	g.Write()
 
 	expected := loadFixture("TestNativeEnumStruct.ts")
 	assert.Equal(t, expected, buf.String())
 }
 
-func TestProtoStructOutput(t *testing.T) {
+func TestNewProtoStructOutput(t *testing.T) {
 	buf := &bytes.Buffer{}
 	g := NewGenerator(buf)
 	g.NativeEnums = true
-	g.RegisterMany(_struct.Struct{})
+	g.RegisterMany(&structpb.Struct{})
 	g.Write()
 
 	expected := loadFixture("TestProtoStruct.ts")
@@ -66,9 +66,7 @@ func TestProtoStructOutput(t *testing.T) {
 func TestOneofOutput(t *testing.T) {
 	buf := &bytes.Buffer{}
 	g := NewGenerator(buf)
-	g.RegisterMany(
-		test.TestOneofStruct{},
-	)
+	g.RegisterMany(&test.TestOneofStruct{})
 	g.Write()
 
 	expected := loadFixture("TestOneOfStruct.ts")

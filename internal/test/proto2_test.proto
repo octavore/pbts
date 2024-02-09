@@ -43,9 +43,11 @@ message TestOneofStruct {
   }
   message Currency {
     optional string country = 1;
+    optional string short_code = 2;
   }
   oneof instrument {
     Stock stock = 1;
     Currency currency = 2;
+    string str_field = 3;
   }
 }

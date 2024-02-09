@@ -3,7 +3,6 @@ package pbts
 import (
 	"fmt"
 	"os"
-	"reflect"
 	"sort"
 	"strings"
 
@@ -36,7 +35,7 @@ func GenerateAll(destPath string, optFns ...optFn) error {
 	g := NewGenerator(f)
 	g.NativeEnums = o.nativeEnums
 
-	messageTypes := []*messageType{}
+	messageTypes := []protoreflect.MessageDescriptor{}
 	protoregistry.GlobalTypes.RangeMessages(func(m protoreflect.MessageType) bool {
 		messageName := fmt.Sprintf("%s", m.Descriptor().FullName())
 		for _, prefix := range o.exclusions {
@@ -44,19 +43,18 @@ func GenerateAll(destPath string, optFns ...optFn) error {
 				return true
 			}
 		}
-		i := reflect.ValueOf(m.New().Interface()).Elem().Interface()
-		messageTypes = append(messageTypes, &messageType{messageName, i})
+		messageTypes = append(messageTypes, m.Descriptor())
 		return true
 	})
 
 	sort.Slice(messageTypes, func(i, j int) bool {
-		return messageTypes[i].Name < messageTypes[j].Name
+		return messageTypes[i].Name() < messageTypes[j].Name()
 	})
 	for _, m := range messageTypes {
 		if o.verbose {
-			fmt.Println(m.Name)
+			fmt.Println(m)
 		}
-		g.Register(m.Instance)
+		g.RegisterDescriptor(m)
 	}
 	g.Write()
 
