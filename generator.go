@@ -125,10 +125,10 @@ func (g *Generator) subconvertFields(v protoreflect.FieldDescriptors) []annotate
 			fields = append(fields, field)
 
 			comment := ""
-			if fieldDesc.ContainingOneof() != nil && !fieldDesc.HasOptionalKeyword(){
+			if fieldDesc.ContainingOneof() != nil && !fieldDesc.HasOptionalKeyword() {
 				comment = fmt.Sprintf(" // oneof:%s", nameWithParent(fieldDesc.ContainingOneof()))
 			}
-			if fieldDesc.HasPresence() || fieldDesc.Cardinality() == protoreflect.Repeated {
+			if fieldDesc.HasPresence() {
 				g.p(2, "%s?: %s;%s", name, typ, comment)
 			} else {
 				g.p(2, "%s: %s;%s", name, typ, comment)

@@ -5,8 +5,8 @@ export abstract class TestProto3Message {
   optStrField?: string;
   int32Field: number;
   int64Field: string;
-  strList?: string[];
-  metadata?: {[key: string]: string};
+  strList: string[];
+  metadata: {[key: string]: string};
   static copy(from: TestProto3Message, to?: TestProto3Message): TestProto3Message {
     if (to) {
       to.strField = from.strField;

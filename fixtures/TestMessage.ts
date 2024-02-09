@@ -4,8 +4,8 @@ export abstract class TestMessage {
   strField?: string;
   int32Field?: number;
   int64Field?: string;
-  strList?: string[];
-  metadata?: {[key: string]: string};
+  strList: string[];
+  metadata: {[key: string]: string};
   static copy(from: TestMessage, to?: TestMessage): TestMessage {
     if (to) {
       to.strField = from.strField;
