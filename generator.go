@@ -118,7 +118,7 @@ func (g *Generator) subconvertFields(v protoreflect.FieldDescriptors) []annotate
 		name := fieldDesc.JSONName()
 		typ, builtin := g.fieldToBaseType(fieldDesc)
 		if typ != "" {
-			field := annotatedField{name: name}
+			field := annotatedField{name: name, required: !fieldDesc.HasPresence()}
 			if !builtin {
 				field.tsType = typ
 			}
@@ -152,8 +152,10 @@ func startsWithLower(s string) bool {
 
 func (g *Generator) convert(msg protoreflect.MessageDescriptor) {
 	className := nameWithParent(msg)
-	g.p(0, "export abstract class %s {", className)
+	g.p(0, "export interface %s {", className)
 	fields := g.subconvertFields(msg.Fields())
+	g.p(0, "}\n")
+	g.p(0, "export abstract class %s {", className)
 	g.generateCopyFunction(className, fields)
 	g.p(0, "}")
 }
@@ -225,12 +227,13 @@ func nameWithParent(e protoreflect.Descriptor) string {
 }
 
 type annotatedField struct {
-	name   string
-	tsType string
+	name     string
+	tsType   string
+	required bool
 }
 
 func (a *annotatedField) generateCopiedValue() string {
-	if a.tsType == "" {
+	if a.tsType == "" || a.required {
 		return fmt.Sprintf("from.%s", a.name)
 	}
 	return fmt.Sprintf("from.%s ? %s.copy(from.%s) : undefined", a.name, a.tsType, a.name)

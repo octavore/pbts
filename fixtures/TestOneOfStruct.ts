@@ -1,9 +1,12 @@
 // DO NOT EDIT! This file is generated automatically by pbts (github.com/octavore/pbts)
 
-export abstract class TestOneofStruct {
+export interface TestOneofStruct {
   stock?: TestOneofStruct_Stock; // oneof:TestOneofStruct_instrument
   currency?: TestOneofStruct_Currency; // oneof:TestOneofStruct_instrument
   strField?: string; // oneof:TestOneofStruct_instrument
+}
+
+export abstract class TestOneofStruct {
   static copy(from: TestOneofStruct, to?: TestOneofStruct): TestOneofStruct {
     if (to) {
       to.stock = from.stock ? TestOneofStruct_Stock.copy(from.stock) : undefined;
@@ -19,8 +22,11 @@ export abstract class TestOneofStruct {
   }
 }
 
-export abstract class TestOneofStruct_Stock {
+export interface TestOneofStruct_Stock {
   name?: string;
+}
+
+export abstract class TestOneofStruct_Stock {
   static copy(from: TestOneofStruct_Stock, to?: TestOneofStruct_Stock): TestOneofStruct_Stock {
     if (to) {
       to.name = from.name;
@@ -30,9 +36,12 @@ export abstract class TestOneofStruct_Stock {
   }
 }
 
-export abstract class TestOneofStruct_Currency {
+export interface TestOneofStruct_Currency {
   country?: string;
   shortCode?: string;
+}
+
+export abstract class TestOneofStruct_Currency {
   static copy(from: TestOneofStruct_Currency, to?: TestOneofStruct_Currency): TestOneofStruct_Currency {
     if (to) {
       to.country = from.country;

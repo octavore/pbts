@@ -1,11 +1,14 @@
 // DO NOT EDIT! This file is generated automatically by pbts (github.com/octavore/pbts)
 
-export abstract class TestMessage {
+export interface TestMessage {
   strField?: string;
   int32Field?: number;
   int64Field?: string;
   strList: string[];
   metadata: {[key: string]: string};
+}
+
+export abstract class TestMessage {
   static copy(from: TestMessage, to?: TestMessage): TestMessage {
     if (to) {
       to.strField = from.strField;

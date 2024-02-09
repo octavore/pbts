@@ -1,7 +1,10 @@
 // DO NOT EDIT! This file is generated automatically by pbts (github.com/octavore/pbts)
 
-export abstract class TestEnumStruct {
+export interface TestEnumStruct {
   enumField?: TestEnumStruct_TestEnum;
+}
+
+export abstract class TestEnumStruct {
   static copy(from: TestEnumStruct, to?: TestEnumStruct): TestEnumStruct {
     if (to) {
       to.enumField = from.enumField;
