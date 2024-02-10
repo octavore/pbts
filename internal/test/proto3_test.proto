@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package pbts;
 
-option go_package = "github.com/octavore/pbts/internal/test";
+option go_package = "github.com/octavore/pbts/v2/internal/test";
 
 import "google/protobuf/struct.proto";
 

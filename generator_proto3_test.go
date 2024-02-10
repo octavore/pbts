@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/octavore/pbts/internal/test"
+	"github.com/octavore/pbts/v2/internal/test"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/encoding/protojson"
 )
@@ -13,7 +13,7 @@ func TestProto3Message(t *testing.T) {
 	buf := &bytes.Buffer{}
 	g := NewGenerator(buf)
 	g.RegisterMany(
-		&test.TestProto3Message{}, 
+		&test.TestProto3Message{},
 		&test.TestProto3NestedMessage{},
 	)
 	g.Write()

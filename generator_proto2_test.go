@@ -5,7 +5,7 @@ import (
 	"embed"
 	"testing"
 
-	"github.com/octavore/pbts/internal/test"
+	"github.com/octavore/pbts/v2/internal/test"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/types/known/structpb"
 )
