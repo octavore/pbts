@@ -121,6 +121,8 @@ func (g *Generator) subconvertFields(v protoreflect.FieldDescriptors) []annotate
 			field := annotatedField{name: name, required: !fieldDesc.HasPresence(), repeated: fieldDesc.IsList()}
 			if !builtin {
 				field.tsType = typ
+			} else {
+				field.builtin = typ
 			}
 			fields = append(fields, field)
 
@@ -193,6 +195,9 @@ func (g *Generator) fieldToBaseType(f protoreflect.FieldDescriptor) (string, boo
 		if f.Message() == (&structpb.Value{}).ProtoReflect().Descriptor() {
 			return "any", true
 		}
+		if f.Message() == (&structpb.Struct{}).ProtoReflect().Descriptor() {
+			return "{[key: string]: any}", true
+		}
 		if f.Message() == (&anypb.Any{}).ProtoReflect().Descriptor() {
 			return "any", true
 		}
@@ -222,6 +227,7 @@ func nameWithParent(e protoreflect.Descriptor) string {
 type annotatedField struct {
 	name     string
 	tsType   string
+	builtin  string
 	required bool
 	repeated bool
 }
@@ -231,6 +237,9 @@ func (a *annotatedField) generateCopiedValue() string {
 		return fmt.Sprintf("from.%s.slice()", a.name)
 	}
 	if a.tsType == "" || a.required {
+		if strings.HasPrefix(a.builtin, "{") {
+			return fmt.Sprintf("structuredClone(from.%s)", a.name)
+		}
 		return fmt.Sprintf("from.%s", a.name)
 	}
 	return fmt.Sprintf("from.%s ? %s.copy(from.%s) : undefined", a.name, a.tsType, a.name)
@@ -247,7 +256,7 @@ func (g *Generator) generateCopyFunction(class string, fields []annotatedField) 
 
 	explicitCopy := []string{}
 	for _, field := range fields {
-		if field.tsType != "" {
+		if field.tsType != ""  || strings.HasPrefix(field.builtin, "{") {
 			explicitCopy = append(explicitCopy,
 				fmt.Sprintf("%s: %s,", field.name, field.generateCopiedValue()))
 		}

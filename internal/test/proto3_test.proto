@@ -14,7 +14,9 @@ message TestProto3Message {
   repeated string str_list = 5;
   TestProto3NestedMessage nested = 6;
   repeated TestProto3NestedMessage nested_list = 7;
-  map<string, int64> metadata = 10;
+  TestProto3GoogleStruct struct_field = 8;
+  TestProto3EnumStruct enum_field = 9;
+  map<string, int32> metadata = 10;
 }
 
 message TestProto3NestedMessage {

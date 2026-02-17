@@ -15,6 +15,8 @@ func TestProto3Message(t *testing.T) {
 	g.RegisterMany(
 		&test.TestProto3Message{},
 		&test.TestProto3NestedMessage{},
+		&test.TestProto3GoogleStruct{},
+		&test.TestProto3EnumStruct{},
 	)
 	g.Write()
 

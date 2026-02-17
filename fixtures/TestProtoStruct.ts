@@ -7,9 +7,12 @@ export interface Struct {
 export abstract class Struct {
   static copy(from: Struct, to?: Struct): Struct {
     if (to) {
-      to.fields = from.fields;
+      to.fields = structuredClone(from.fields);
       return to;
     }
-    return {...from};
+    return {
+      ...from,
+      fields: structuredClone(from.fields),
+    };
   }
 }
