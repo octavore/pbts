@@ -53,11 +53,12 @@ func (g *Generator) RegisterDescriptor(msgDesc protoreflect.MessageDescriptor) {
 
 func (g *Generator) Write() {
 	g.p(0, filePreamble)
-	for _, m := range g.models {
-		g.p(0, "")
-		g.convert(m)
-	}
-	for _, m := range g.indirectModels {
+	seen := map[protoreflect.FullName]bool{}
+	for _, m := range append(append([]protoreflect.MessageDescriptor{}, g.models...), g.indirectModels...) {
+		if seen[m.FullName()] {
+			continue
+		}
+		seen[m.FullName()] = true
 		g.p(0, "")
 		g.convert(m)
 	}
@@ -102,7 +103,12 @@ func (g *Generator) writeEnums() {
 	sort.Slice(g.enums, func(i, j int) bool {
 		return g.enums[i].Name() < g.enums[j].Name()
 	})
+	seen := map[protoreflect.FullName]bool{}
 	for _, enum := range g.enums {
+		if seen[enum.FullName()] {
+			continue
+		}
+		seen[enum.FullName()] = true
 		g.p(0, "")
 		g.convertEnum(enum)
 	}

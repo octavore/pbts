@@ -36,6 +36,13 @@ message TestProto3EnumStruct {
   TestProto3Enum enum_field = 1;
 }
 
+// TestProto3DupEnumStruct references the same enum type from two fields, to
+// exercise deduplication of repeated enum registration.
+message TestProto3DupEnumStruct {
+  TestProto3EnumStruct.TestProto3Enum enum_field_a = 1;
+  TestProto3EnumStruct.TestProto3Enum enum_field_b = 2;
+}
+
 message TestProto3OneOfStruct {
   message Cat {
     string meow = 1;

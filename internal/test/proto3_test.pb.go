@@ -330,6 +330,63 @@ func (x *TestProto3EnumStruct) GetEnumField() TestProto3EnumStruct_TestProto3Enu
 	return TestProto3EnumStruct_unknown
 }
 
+// TestProto3DupEnumStruct references the same enum type from two fields, to
+// exercise deduplication of repeated enum registration.
+type TestProto3DupEnumStruct struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	EnumFieldA TestProto3EnumStruct_TestProto3Enum `protobuf:"varint,1,opt,name=enum_field_a,json=enumFieldA,proto3,enum=pbts.TestProto3EnumStruct_TestProto3Enum" json:"enum_field_a,omitempty"`
+	EnumFieldB TestProto3EnumStruct_TestProto3Enum `protobuf:"varint,2,opt,name=enum_field_b,json=enumFieldB,proto3,enum=pbts.TestProto3EnumStruct_TestProto3Enum" json:"enum_field_b,omitempty"`
+}
+
+func (x *TestProto3DupEnumStruct) Reset() {
+	*x = TestProto3DupEnumStruct{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_internal_test_proto3_test_proto_msgTypes[4]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *TestProto3DupEnumStruct) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TestProto3DupEnumStruct) ProtoMessage() {}
+
+func (x *TestProto3DupEnumStruct) ProtoReflect() protoreflect.Message {
+	mi := &file_internal_test_proto3_test_proto_msgTypes[4]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TestProto3DupEnumStruct.ProtoReflect.Descriptor instead.
+func (*TestProto3DupEnumStruct) Descriptor() ([]byte, []int) {
+	return file_internal_test_proto3_test_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *TestProto3DupEnumStruct) GetEnumFieldA() TestProto3EnumStruct_TestProto3Enum {
+	if x != nil {
+		return x.EnumFieldA
+	}
+	return TestProto3EnumStruct_unknown
+}
+
+func (x *TestProto3DupEnumStruct) GetEnumFieldB() TestProto3EnumStruct_TestProto3Enum {
+	if x != nil {
+		return x.EnumFieldB
+	}
+	return TestProto3EnumStruct_unknown
+}
+
 type TestProto3OneOfStruct struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -346,7 +403,7 @@ type TestProto3OneOfStruct struct {
 func (x *TestProto3OneOfStruct) Reset() {
 	*x = TestProto3OneOfStruct{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_internal_test_proto3_test_proto_msgTypes[4]
+		mi := &file_internal_test_proto3_test_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -359,7 +416,7 @@ func (x *TestProto3OneOfStruct) String() string {
 func (*TestProto3OneOfStruct) ProtoMessage() {}
 
 func (x *TestProto3OneOfStruct) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_test_proto3_test_proto_msgTypes[4]
+	mi := &file_internal_test_proto3_test_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -372,7 +429,7 @@ func (x *TestProto3OneOfStruct) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TestProto3OneOfStruct.ProtoReflect.Descriptor instead.
 func (*TestProto3OneOfStruct) Descriptor() ([]byte, []int) {
-	return file_internal_test_proto3_test_proto_rawDescGZIP(), []int{4}
+	return file_internal_test_proto3_test_proto_rawDescGZIP(), []int{5}
 }
 
 func (m *TestProto3OneOfStruct) GetPet() isTestProto3OneOfStruct_Pet {
@@ -436,7 +493,7 @@ type TestProto3OneOfStruct_Cat struct {
 func (x *TestProto3OneOfStruct_Cat) Reset() {
 	*x = TestProto3OneOfStruct_Cat{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_internal_test_proto3_test_proto_msgTypes[6]
+		mi := &file_internal_test_proto3_test_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -449,7 +506,7 @@ func (x *TestProto3OneOfStruct_Cat) String() string {
 func (*TestProto3OneOfStruct_Cat) ProtoMessage() {}
 
 func (x *TestProto3OneOfStruct_Cat) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_test_proto3_test_proto_msgTypes[6]
+	mi := &file_internal_test_proto3_test_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -462,7 +519,7 @@ func (x *TestProto3OneOfStruct_Cat) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TestProto3OneOfStruct_Cat.ProtoReflect.Descriptor instead.
 func (*TestProto3OneOfStruct_Cat) Descriptor() ([]byte, []int) {
-	return file_internal_test_proto3_test_proto_rawDescGZIP(), []int{4, 0}
+	return file_internal_test_proto3_test_proto_rawDescGZIP(), []int{5, 0}
 }
 
 func (x *TestProto3OneOfStruct_Cat) GetMeow() string {
@@ -483,7 +540,7 @@ type TestProto3OneOfStruct_Dog struct {
 func (x *TestProto3OneOfStruct_Dog) Reset() {
 	*x = TestProto3OneOfStruct_Dog{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_internal_test_proto3_test_proto_msgTypes[7]
+		mi := &file_internal_test_proto3_test_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -496,7 +553,7 @@ func (x *TestProto3OneOfStruct_Dog) String() string {
 func (*TestProto3OneOfStruct_Dog) ProtoMessage() {}
 
 func (x *TestProto3OneOfStruct_Dog) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_test_proto3_test_proto_msgTypes[7]
+	mi := &file_internal_test_proto3_test_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -509,7 +566,7 @@ func (x *TestProto3OneOfStruct_Dog) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TestProto3OneOfStruct_Dog.ProtoReflect.Descriptor instead.
 func (*TestProto3OneOfStruct_Dog) Descriptor() ([]byte, []int) {
-	return file_internal_test_proto3_test_proto_rawDescGZIP(), []int{4, 1}
+	return file_internal_test_proto3_test_proto_rawDescGZIP(), []int{5, 1}
 }
 
 func (x *TestProto3OneOfStruct_Dog) GetBark() string {
@@ -580,24 +637,35 @@ var file_internal_test_proto3_test_proto_rawDesc = []byte{
 	0x69, 0x65, 0x6c, 0x64, 0x22, 0x2f, 0x0a, 0x0e, 0x54, 0x65, 0x73, 0x74, 0x50, 0x72, 0x6f, 0x74,
 	0x6f, 0x33, 0x45, 0x6e, 0x75, 0x6d, 0x12, 0x0b, 0x0a, 0x07, 0x75, 0x6e, 0x6b, 0x6e, 0x6f, 0x77,
 	0x6e, 0x10, 0x00, 0x12, 0x07, 0x0a, 0x03, 0x66, 0x6f, 0x6f, 0x10, 0x01, 0x12, 0x07, 0x0a, 0x03,
-	0x62, 0x61, 0x72, 0x10, 0x02, 0x22, 0xd6, 0x01, 0x0a, 0x15, 0x54, 0x65, 0x73, 0x74, 0x50, 0x72,
-	0x6f, 0x74, 0x6f, 0x33, 0x4f, 0x6e, 0x65, 0x4f, 0x66, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x12,
-	0x33, 0x0a, 0x03, 0x63, 0x61, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1f, 0x2e, 0x70,
-	0x62, 0x74, 0x73, 0x2e, 0x54, 0x65, 0x73, 0x74, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x33, 0x4f, 0x6e,
-	0x65, 0x4f, 0x66, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x2e, 0x43, 0x61, 0x74, 0x48, 0x00, 0x52,
-	0x03, 0x63, 0x61, 0x74, 0x12, 0x33, 0x0a, 0x03, 0x64, 0x6f, 0x67, 0x18, 0x02, 0x20, 0x01, 0x28,
-	0x0b, 0x32, 0x1f, 0x2e, 0x70, 0x62, 0x74, 0x73, 0x2e, 0x54, 0x65, 0x73, 0x74, 0x50, 0x72, 0x6f,
-	0x74, 0x6f, 0x33, 0x4f, 0x6e, 0x65, 0x4f, 0x66, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x2e, 0x44,
-	0x6f, 0x67, 0x48, 0x00, 0x52, 0x03, 0x64, 0x6f, 0x67, 0x12, 0x16, 0x0a, 0x05, 0x6f, 0x74, 0x68,
-	0x65, 0x72, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x48, 0x00, 0x52, 0x05, 0x6f, 0x74, 0x68, 0x65,
-	0x72, 0x1a, 0x19, 0x0a, 0x03, 0x43, 0x61, 0x74, 0x12, 0x12, 0x0a, 0x04, 0x6d, 0x65, 0x6f, 0x77,
-	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6d, 0x65, 0x6f, 0x77, 0x1a, 0x19, 0x0a, 0x03,
-	0x44, 0x6f, 0x67, 0x12, 0x12, 0x0a, 0x04, 0x62, 0x61, 0x72, 0x6b, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x09, 0x52, 0x04, 0x62, 0x61, 0x72, 0x6b, 0x42, 0x05, 0x0a, 0x03, 0x70, 0x65, 0x74, 0x42, 0x2b,
-	0x5a, 0x29, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x6f, 0x63, 0x74,
-	0x61, 0x76, 0x6f, 0x72, 0x65, 0x2f, 0x70, 0x62, 0x74, 0x73, 0x2f, 0x76, 0x32, 0x2f, 0x69, 0x6e,
-	0x74, 0x65, 0x72, 0x6e, 0x61, 0x6c, 0x2f, 0x74, 0x65, 0x73, 0x74, 0x62, 0x06, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x33,
+	0x62, 0x61, 0x72, 0x10, 0x02, 0x22, 0xb3, 0x01, 0x0a, 0x17, 0x54, 0x65, 0x73, 0x74, 0x50, 0x72,
+	0x6f, 0x74, 0x6f, 0x33, 0x44, 0x75, 0x70, 0x45, 0x6e, 0x75, 0x6d, 0x53, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x12, 0x4b, 0x0a, 0x0c, 0x65, 0x6e, 0x75, 0x6d, 0x5f, 0x66, 0x69, 0x65, 0x6c, 0x64, 0x5f,
+	0x61, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x29, 0x2e, 0x70, 0x62, 0x74, 0x73, 0x2e, 0x54,
+	0x65, 0x73, 0x74, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x33, 0x45, 0x6e, 0x75, 0x6d, 0x53, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x2e, 0x54, 0x65, 0x73, 0x74, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x33, 0x45, 0x6e,
+	0x75, 0x6d, 0x52, 0x0a, 0x65, 0x6e, 0x75, 0x6d, 0x46, 0x69, 0x65, 0x6c, 0x64, 0x41, 0x12, 0x4b,
+	0x0a, 0x0c, 0x65, 0x6e, 0x75, 0x6d, 0x5f, 0x66, 0x69, 0x65, 0x6c, 0x64, 0x5f, 0x62, 0x18, 0x02,
+	0x20, 0x01, 0x28, 0x0e, 0x32, 0x29, 0x2e, 0x70, 0x62, 0x74, 0x73, 0x2e, 0x54, 0x65, 0x73, 0x74,
+	0x50, 0x72, 0x6f, 0x74, 0x6f, 0x33, 0x45, 0x6e, 0x75, 0x6d, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x2e, 0x54, 0x65, 0x73, 0x74, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x33, 0x45, 0x6e, 0x75, 0x6d, 0x52,
+	0x0a, 0x65, 0x6e, 0x75, 0x6d, 0x46, 0x69, 0x65, 0x6c, 0x64, 0x42, 0x22, 0xd6, 0x01, 0x0a, 0x15,
+	0x54, 0x65, 0x73, 0x74, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x33, 0x4f, 0x6e, 0x65, 0x4f, 0x66, 0x53,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x12, 0x33, 0x0a, 0x03, 0x63, 0x61, 0x74, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x1f, 0x2e, 0x70, 0x62, 0x74, 0x73, 0x2e, 0x54, 0x65, 0x73, 0x74, 0x50, 0x72,
+	0x6f, 0x74, 0x6f, 0x33, 0x4f, 0x6e, 0x65, 0x4f, 0x66, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x2e,
+	0x43, 0x61, 0x74, 0x48, 0x00, 0x52, 0x03, 0x63, 0x61, 0x74, 0x12, 0x33, 0x0a, 0x03, 0x64, 0x6f,
+	0x67, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1f, 0x2e, 0x70, 0x62, 0x74, 0x73, 0x2e, 0x54,
+	0x65, 0x73, 0x74, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x33, 0x4f, 0x6e, 0x65, 0x4f, 0x66, 0x53, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x2e, 0x44, 0x6f, 0x67, 0x48, 0x00, 0x52, 0x03, 0x64, 0x6f, 0x67, 0x12,
+	0x16, 0x0a, 0x05, 0x6f, 0x74, 0x68, 0x65, 0x72, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x48, 0x00,
+	0x52, 0x05, 0x6f, 0x74, 0x68, 0x65, 0x72, 0x1a, 0x19, 0x0a, 0x03, 0x43, 0x61, 0x74, 0x12, 0x12,
+	0x0a, 0x04, 0x6d, 0x65, 0x6f, 0x77, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6d, 0x65,
+	0x6f, 0x77, 0x1a, 0x19, 0x0a, 0x03, 0x44, 0x6f, 0x67, 0x12, 0x12, 0x0a, 0x04, 0x62, 0x61, 0x72,
+	0x6b, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x62, 0x61, 0x72, 0x6b, 0x42, 0x05, 0x0a,
+	0x03, 0x70, 0x65, 0x74, 0x42, 0x2b, 0x5a, 0x29, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63,
+	0x6f, 0x6d, 0x2f, 0x6f, 0x63, 0x74, 0x61, 0x76, 0x6f, 0x72, 0x65, 0x2f, 0x70, 0x62, 0x74, 0x73,
+	0x2f, 0x76, 0x32, 0x2f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e, 0x61, 0x6c, 0x2f, 0x74, 0x65, 0x73,
+	0x74, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -613,34 +681,37 @@ func file_internal_test_proto3_test_proto_rawDescGZIP() []byte {
 }
 
 var file_internal_test_proto3_test_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_internal_test_proto3_test_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_internal_test_proto3_test_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_internal_test_proto3_test_proto_goTypes = []interface{}{
 	(TestProto3EnumStruct_TestProto3Enum)(0), // 0: pbts.TestProto3EnumStruct.TestProto3Enum
 	(*TestProto3Message)(nil),                // 1: pbts.TestProto3Message
 	(*TestProto3NestedMessage)(nil),          // 2: pbts.TestProto3NestedMessage
 	(*TestProto3GoogleStruct)(nil),           // 3: pbts.TestProto3GoogleStruct
 	(*TestProto3EnumStruct)(nil),             // 4: pbts.TestProto3EnumStruct
-	(*TestProto3OneOfStruct)(nil),            // 5: pbts.TestProto3OneOfStruct
-	nil,                                      // 6: pbts.TestProto3Message.MetadataEntry
-	(*TestProto3OneOfStruct_Cat)(nil),        // 7: pbts.TestProto3OneOfStruct.Cat
-	(*TestProto3OneOfStruct_Dog)(nil),        // 8: pbts.TestProto3OneOfStruct.Dog
-	(*structpb.Struct)(nil),                  // 9: google.protobuf.Struct
+	(*TestProto3DupEnumStruct)(nil),          // 5: pbts.TestProto3DupEnumStruct
+	(*TestProto3OneOfStruct)(nil),            // 6: pbts.TestProto3OneOfStruct
+	nil,                                      // 7: pbts.TestProto3Message.MetadataEntry
+	(*TestProto3OneOfStruct_Cat)(nil),        // 8: pbts.TestProto3OneOfStruct.Cat
+	(*TestProto3OneOfStruct_Dog)(nil),        // 9: pbts.TestProto3OneOfStruct.Dog
+	(*structpb.Struct)(nil),                  // 10: google.protobuf.Struct
 }
 var file_internal_test_proto3_test_proto_depIdxs = []int32{
-	2, // 0: pbts.TestProto3Message.nested:type_name -> pbts.TestProto3NestedMessage
-	2, // 1: pbts.TestProto3Message.nested_list:type_name -> pbts.TestProto3NestedMessage
-	3, // 2: pbts.TestProto3Message.struct_field:type_name -> pbts.TestProto3GoogleStruct
-	4, // 3: pbts.TestProto3Message.enum_field:type_name -> pbts.TestProto3EnumStruct
-	6, // 4: pbts.TestProto3Message.metadata:type_name -> pbts.TestProto3Message.MetadataEntry
-	9, // 5: pbts.TestProto3GoogleStruct.struct_field:type_name -> google.protobuf.Struct
-	0, // 6: pbts.TestProto3EnumStruct.enum_field:type_name -> pbts.TestProto3EnumStruct.TestProto3Enum
-	7, // 7: pbts.TestProto3OneOfStruct.cat:type_name -> pbts.TestProto3OneOfStruct.Cat
-	8, // 8: pbts.TestProto3OneOfStruct.dog:type_name -> pbts.TestProto3OneOfStruct.Dog
-	9, // [9:9] is the sub-list for method output_type
-	9, // [9:9] is the sub-list for method input_type
-	9, // [9:9] is the sub-list for extension type_name
-	9, // [9:9] is the sub-list for extension extendee
-	0, // [0:9] is the sub-list for field type_name
+	2,  // 0: pbts.TestProto3Message.nested:type_name -> pbts.TestProto3NestedMessage
+	2,  // 1: pbts.TestProto3Message.nested_list:type_name -> pbts.TestProto3NestedMessage
+	3,  // 2: pbts.TestProto3Message.struct_field:type_name -> pbts.TestProto3GoogleStruct
+	4,  // 3: pbts.TestProto3Message.enum_field:type_name -> pbts.TestProto3EnumStruct
+	7,  // 4: pbts.TestProto3Message.metadata:type_name -> pbts.TestProto3Message.MetadataEntry
+	10, // 5: pbts.TestProto3GoogleStruct.struct_field:type_name -> google.protobuf.Struct
+	0,  // 6: pbts.TestProto3EnumStruct.enum_field:type_name -> pbts.TestProto3EnumStruct.TestProto3Enum
+	0,  // 7: pbts.TestProto3DupEnumStruct.enum_field_a:type_name -> pbts.TestProto3EnumStruct.TestProto3Enum
+	0,  // 8: pbts.TestProto3DupEnumStruct.enum_field_b:type_name -> pbts.TestProto3EnumStruct.TestProto3Enum
+	8,  // 9: pbts.TestProto3OneOfStruct.cat:type_name -> pbts.TestProto3OneOfStruct.Cat
+	9,  // 10: pbts.TestProto3OneOfStruct.dog:type_name -> pbts.TestProto3OneOfStruct.Dog
+	11, // [11:11] is the sub-list for method output_type
+	11, // [11:11] is the sub-list for method input_type
+	11, // [11:11] is the sub-list for extension type_name
+	11, // [11:11] is the sub-list for extension extendee
+	0,  // [0:11] is the sub-list for field type_name
 }
 
 func init() { file_internal_test_proto3_test_proto_init() }
@@ -698,6 +769,18 @@ func file_internal_test_proto3_test_proto_init() {
 			}
 		}
 		file_internal_test_proto3_test_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*TestProto3DupEnumStruct); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_internal_test_proto3_test_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*TestProto3OneOfStruct); i {
 			case 0:
 				return &v.state
@@ -709,7 +792,7 @@ func file_internal_test_proto3_test_proto_init() {
 				return nil
 			}
 		}
-		file_internal_test_proto3_test_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
+		file_internal_test_proto3_test_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*TestProto3OneOfStruct_Cat); i {
 			case 0:
 				return &v.state
@@ -721,7 +804,7 @@ func file_internal_test_proto3_test_proto_init() {
 				return nil
 			}
 		}
-		file_internal_test_proto3_test_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+		file_internal_test_proto3_test_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*TestProto3OneOfStruct_Dog); i {
 			case 0:
 				return &v.state
@@ -735,7 +818,7 @@ func file_internal_test_proto3_test_proto_init() {
 		}
 	}
 	file_internal_test_proto3_test_proto_msgTypes[0].OneofWrappers = []interface{}{}
-	file_internal_test_proto3_test_proto_msgTypes[4].OneofWrappers = []interface{}{
+	file_internal_test_proto3_test_proto_msgTypes[5].OneofWrappers = []interface{}{
 		(*TestProto3OneOfStruct_Cat_)(nil),
 		(*TestProto3OneOfStruct_Dog_)(nil),
 		(*TestProto3OneOfStruct_Other)(nil),
@@ -746,7 +829,7 @@ func file_internal_test_proto3_test_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_internal_test_proto3_test_proto_rawDesc,
 			NumEnums:      1,
-			NumMessages:   8,
+			NumMessages:   9,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
